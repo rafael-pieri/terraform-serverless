@@ -5,17 +5,23 @@ const util = require("util");
 util.promisify(messagebird.messages.create);
 
 module.exports.send = async (event) => {
-  const smsPromises = event.Records.map((record) => {
+  const smsPromises = [];
+
+  for (const record of event.Records) {
     const message = JSON.parse(record.body).Message;
-    messagebird.messages.create({
-      originator: process.env.SMS_PHONE_FROM,
-      recipients: [process.env.SMS_PHONE_TO],
-      body: message,
-    });
-  });
-  await Promise.all(smsPromises);
-  return {
-    message: "SMSs sent successfully",
-    event,
-  };
+    smsPromises.push(
+      messagebird.messages.create({
+        originator: process.env.SMS_PHONE_FROM,
+        recipients: [process.env.SMS_PHONE_TO],
+        body: message,
+      })
+    );
+  }
+
+  try {
+    await Promise.all(smsPromises);
+    console.log("SMSs sent successfully");
+  } catch (err) {
+    console.log(err);
+  }
 };

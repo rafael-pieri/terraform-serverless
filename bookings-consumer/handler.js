@@ -11,20 +11,25 @@ const converter = AWS.DynamoDB.Converter;
 const moment = require("moment");
 
 module.exports.listen = async (event) => {
-  const snsPromises = event.Records.map((record) => {
+  const snsPromises = [];
+
+  for (const record of event.Records) {
     if (record.eventName === "INSERT") {
       const booking = converter.unmarshall(record.dynamodb.NewImage);
-      SNS.publish({
+      const message = {
         TopicArn: process.env.SNS_NOTIFICATIONS_TOPIC,
         Message: `Booking performed: User ${booking.user.name} (${
           booking.user.email
         }) scheduled a time in: ${moment(booking.date).format("LLLL")}`,
-      }).promise();
+      };
+      snsPromises.push(SNS.publish(message).promise());
     }
-  });
-  await Promise.all(snsPromises);
-  return {
-    message: "Messages sent successfully",
-    event,
-  };
+  }
+
+  try {
+    await Promise.all(snsPromises);
+    console.log("Messages sent successfully");
+  } catch (err) {
+    console.log(err);
+  }
 };

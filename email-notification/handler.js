@@ -12,19 +12,25 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports.send = async (event) => {
-  const emailPromises = event.Records.map((record) => {
+  const emailPromises = [];
+
+  for (const record of event.Records) {
     const message = JSON.parse(record.body).Message;
-    transporter.sendMail({
-      from: `"Bookings 👻" <${process.env.EMAIL_FROM}>`,
-      to: process.env.EMAIL_TO,
-      subject: "Booking performed ✔",
-      text: message,
-      html: message,
-    });
-  });
-  await Promise.all(emailPromises);
-  return {
-    message: "All emails sent successfully",
-    event,
-  };
+    emailPromises.push(
+      transporter.sendMail({
+        from: `"Bookings 👻" <${process.env.EMAIL_FROM}>`,
+        to: process.env.EMAIL_TO,
+        subject: "Booking performed ✔",
+        text: message,
+        html: message,
+      })
+    );
+  }
+
+  try {
+    await Promise.all(emailPromises);
+    console.log("All emails sent successfully");
+  } catch (err) {
+    console.log(err);
+  }
 };
