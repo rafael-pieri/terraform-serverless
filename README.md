@@ -1,28 +1,19 @@
-# terraform-serverless
+## AWS Cloud-Native Application with Terraform and Serverless Framework
 
-Course: AWS Cloud-Native with Terraform and Serverless Framework
+### Environments
 
-## How to deploy infrastructure
+| Environment | Key  |
+| ----------- | ---- |
+| Development | dev  |
+| Production  | prod |
 
-`sh deploy.sh ${environment}`
+### How to deploy infrastructure
 
-Replace argument \${environment} with one of event options below:
+`sh deploy.sh ${environment-key}`
 
-| Environment | Value |
-| ----------- | ----- |
-| Development | dev   |
-| Production  | prod  |
+### How to destroy infrastructure
 
-## How to destroy infrastructure
-
-`sh deploy.sh ${environment}`
-
-Replace argument \${environment} with one of event options below:
-
-| Environment | Value |
-| ----------- | ----- |
-| Development | dev   |
-| Production  | prod  |
+`sh deploy.sh ${environment-key}`
 
 ## Architecture
 
