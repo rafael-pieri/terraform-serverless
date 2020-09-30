@@ -17,4 +17,6 @@
 
 ## Architecture
 
----
+The project is built as follows:
+
+![](architecture.png)
